@@ -32,17 +32,6 @@ public class Classification {
 		this.outputPath = outputPath;
 	}
 
-	private int classToNumeric(String cl)
-	{
-		for (int i = 1; i < 26; i++)
-		{
-			if (this.typeMusic[i-1].contains(cl))
-				return i;
-
-		}
-		return 0;
-	}
-
 	private static String classToNominal(int cl)
 	{
 		return typeMusic[cl];
