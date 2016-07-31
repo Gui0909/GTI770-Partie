@@ -16,9 +16,7 @@ import weka.filters.unsupervised.attribute.Remove;
 
 public class Classification {
 
-	static public ArrayList<Integer> ssdListValue = new ArrayList<Integer>(Arrays.asList(25,26,30,45,46,47,48,50,51,52,55,57,58,59,60,61,62,63,64,65,66,73,74,98,111,113,115,121,122,123,127,132,134,135,136,137,139,140,145));
 	static public ArrayList<Integer> mccListValue = new ArrayList<Integer>(Arrays.asList(1,2,3,5,6,7,8,9,10,11,12,13,14,15,16,17,19,21));
-	static public ArrayList<Integer> derivateListValue = new ArrayList<Integer>(Arrays.asList(2,5,8,15,19,20,21,22,23,24,25,26,29,30,35,37,38,39,41,42,43,44,47,48,55,56,58,61,64,66,67,69,70,79,88,94));
 
 	private String inputFilePath;
 	private String outputPath;
@@ -58,7 +56,7 @@ public class Classification {
 			toClassify = new Instances(new BufferedReader(new FileReader(inputFilePath)));
 			toClassify.setClassIndex(toClassify.numAttributes() - 1);
 			//Prepare the j48 classifier and classify according to it.
-			ObjectInputStream j48InputStream = new ObjectInputStream(getClass().getResourceAsStream("/models/treessd.model"));
+			ObjectInputStream j48InputStream = new ObjectInputStream(getClass().getResourceAsStream("/models/treemfcc.model"));
 			Classifier j48Classifier = (Classifier) j48InputStream.readObject();
 
 			toClassify = prepareData(toClassify);
@@ -90,71 +88,26 @@ public class Classification {
 		Remove rmUseless = new Remove();
 		String[] options = new String[2];
 
-		if(inputFilePath.contains("mfcc")){
 
-			options[0] = "-R";
+		options[0] = "-R";
 
-			rmUseless = new Remove();
-			for (Integer i = 0; i < 18; i++)
-			{
-				if (!mccListValue.contains(i+1))
-				{
-					if(options[1] == null)
-					{
-						options[1] = Integer.toString(i+1);
-					} 
-					else 
-					{
-						options[1] = options[1] + "," + Integer.toString(i+1);
-					}
-				}
-			}
-
-		}
-		else if (inputFilePath.contains("ssd")) 
+		rmUseless = new Remove();
+		for (Integer i = 0; i < 18; i++)
 		{
-
-			options[0] = "-R";
-
-			rmUseless = new Remove();
-			for (Integer i = 0; i < 168; i++)
+			if (!mccListValue.contains(i+1))
 			{
-
-				if (!ssdListValue.contains(i+1))
+				if(options[1] == null)
 				{
-					if(options[1] == null){
-						options[1] = Integer.toString(i+1);
-					} 
-					else 
-					{
-						options[1] = options[1] + "," + Integer.toString(i+1);
-					}
+					options[1] = Integer.toString(i+1);
+				} 
+				else 
+				{
+					options[1] = options[1] + "," + Integer.toString(i+1);
 				}
 			}
-		} 
-		else if (inputFilePath.contains("deriv")) 
-		{
-
-			options[0] = "-R";
-
-			rmUseless = new Remove();
-			for (Integer i = 0; i < 96; i++)
-			{
-
-				if (!derivateListValue.contains(i+1))
-				{
-					if(options[1] == null)
-					{
-						options[1] = Integer.toString(i+1);
-					} 
-					else 
-					{
-						options[1] = options[1] + "," + Integer.toString(i+1);
-					}
-				}
-			}
-
 		}
+
+		
 		rmUseless.setOptions(options);
 		rmUseless.setInputFormat(toClassify);
 		toClassify = Filter.useFilter(toClassify, rmUseless);
